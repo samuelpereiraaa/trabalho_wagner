@@ -8,7 +8,7 @@ import re
 class Backend():
 
     def ativar_db(self):
-        self.conn = sqlite3.connect("Alunos_Cadastado.db")
+        self.conn = sqlite3.connect("Alunos_cadastrados")
         self.cursor = self.conn.cursor()
         print("Banco de dados: Ativo")
 
@@ -104,17 +104,18 @@ class Backend():
 
         self.verifica_db = self.cursor.fetchone()
 
-        try:
-            if(self.cpf_login == "" or self.senha_login == ""):
-                messagebox.showinfo(title="Sistema", message="Preencha os campos vazios.")
-            elif(self.cpf_login in self.verifica_db and self.senha_login in self.verifica_db):
-                messagebox.showinfo(title="Sistema", message="Login bem sucessido, bem vindo!")
-                self.desativar_db()
-                self.limpar_campos_login()
-        except:
-            messagebox.showerror(title="Sistema", message="Usuário não encontrado.\n Verifique seus dados.")
-            self.desativar_db()
-
+    try:
+        if self.cpf_login == "" or self.senha_login == "":
+            messagebox.showinfo(title="Sistema", message="Preencha os campos vazios.")
+        elif self.verifica_db:
+            messagebox.showinfo(title="Sistema", message="Login bem-sucedido, bem-vindo!")
+            self.limpar_campos_login()
+        else:
+            messagebox.showerror(title="Sistema", message="Usuário não encontrado.\nVerifique seus dados.")
+    except Exception as err:
+        messagebox.showerror(title="Sistema", message=f"Erro no login: {err}")
+    finally:
+        self.desativar_db()
 
 class App(ctk.CTk,Backend):
     def __init__(self):
